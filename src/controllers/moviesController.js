@@ -100,24 +100,46 @@ const moviesController = {
     },
     delete: function (req, res) {
         // TODO
-        db.Movie.findByPk(req.params.id)
-        .then(movuie =>{
+       db.Movie.findByPk(req.params.id)
+        .then(movie =>{
             return res.render('moviesDelete',{
-                movie
+                Movie:movie
             })
         }).catch(error => console.log(error))
+        
     },
     destroy: function (req, res) {
         // TODO
-        db.Movie.destroy({
+        db.ActorMovie.destroy({
             where:{
-                id:req.params.id
+                movie_id: req.params.id
             }
-        }).then(movie =>{
-            return res.render('/movies',{
-                movie
+        }).then((response) =>{
+            console.log("respons ActorMovie =>", response);
+            db.Actor.update (
+                {
+                    favorite_movie_id : null
+                },
+                {
+                    where : {
+                        favorite_movie_id : req.params.id
+                    }
+                } 
+            ).then(response =>{
+                console.log("response Movie => ",response)
+                db.Movie.destroy({
+                    where:{
+                        id:req.params.id
+                    },
+    
+                }).then((response) =>{
+                    console.log("response Movie =>",response)
+                    return res.redirect("/movies")
+                })
             })
-        }).catch(error => console.log(Error))
+            })
+            .catch(error => console.log(error))
+        
     }
 
 }
